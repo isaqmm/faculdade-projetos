@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Dark Flight Deluxe</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg1: #05070d;
+      --bg2: #0d1320;
+      --bg3: #111827;
+      --text: #f4f7ff;
+      --muted: #a6b1c8;
+      --glass: rgba(255,255,255,0.07);
+      --glass-2: rgba(255,255,255,0.11);
+      --shadow: 0 24px 80px rgba(0,0,0,0.45);
+      --accent: #7c3aed;
+      --accent2: #22d3ee;
+      --danger: #ff4d7a;
+      --ok: #22c55e;
+      --warn: #f59e0b;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(124,58,237,0.18), transparent 35%),
+        radial-gradient(circle at bottom right, rgba(34,211,238,0.1), transparent 25%),
+        linear-gradient(160deg, var(--bg1), var(--bg2), #05070b 80%);
+      color: var(--text);
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      padding: 10px;
+    }
+
+    .wrap {
+      width: min(100%, 1160px);
+      display: grid;
+      gap: 12px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, var(--glass-2), var(--glass));
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow);
+      flex-wrap: wrap;
+    }
+
+    .brand h1 {
+      font-size: clamp(1.1rem, 2vw, 1.8rem);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .brand p {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .stats {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      min-width: 110px;
+      padding: 10px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.05);
+      text-align: center;
+    }
+
+    .pill span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .pill strong {
+      font-size: 1.05rem;
+    }
+
+    .game-shell {
+      position: relative;
+      border-radius: 28px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow);
+      background: rgba(255,255,255,0.03);
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      max-height: calc(100vh - 180px);
+      height: auto;
+      background: #080b12;
+      touch-action: manipulation;
+    }
+
+    .hud {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .hint {
+      position: absolute;
+      left: 14px;
+      bottom: 14px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #dce4f8;
+      font-size: 0.92rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .mobile-controls {
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      display: none;
+      pointer-events: auto;
+    }
+
+    .tap-btn {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(124,58,237,0.35), rgba(34,211,238,0.18));
+      color: white;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: linear-gradient(180deg, rgba(4,6,10,0.35), rgba(4,6,10,0.78));
+      backdrop-filter: blur(7px);
+      transition: 0.25s ease;
+    }
+
+    .overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .panel {
+      width: min(96%, 660px);
+      padding: 26px;
+      border-radius: 28px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(17,23,38,0.94), rgba(8,11,19,0.96));
+      box-shadow: 0 24px 80px rgba(0,0,0,0.55);
+      text-align: center;
+    }
+
+    .panel h2 {
+      font-size: clamp(1.5rem, 4vw, 2.8rem);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .panel p {
+      color: var(--muted);
+      line-height: 1.55;
+      margin-bottom: 16px;
+    }
+
+    .glow {
+      text-shadow: 0 0 16px rgba(124,58,237,0.8), 0 0 26px rgba(34,211,238,0.3);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .option-card {
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      text-align: left;
+      cursor: pointer;
+      transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+      user-select: none;
+    }
+
+    .option-card:hover,
+    .option-card.active {
+      transform: translateY(-2px);
+      border-color: rgba(124,58,237,0.7);
+      background: rgba(124,58,237,0.14);
+    }
+
+    .option-card h3 {
+      font-size: 1rem;
+      margin-bottom: 6px;
+    }
+
+    .option-card small {
+      color: var(--muted);
+      line-height: 1.45;
+      display: block;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      padding: 13px 20px;
+      border-radius: 14px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    button:hover { transform: translateY(-2px); }
+    button:active { transform: translateY(0); }
+
+    .primary {
+      color: white;
+      background: linear-gradient(135deg, var(--accent), #5b21b6);
+      box-shadow: 0 12px 24px rgba(124,58,237,0.35);
+    }
+
+    .secondary {
+      color: white;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .loading-bar {
+      width: 100%;
+      height: 14px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      margin-top: 12px;
+    }
+
+    .loading-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width 0.2s ease;
+    }
+
+    .footer-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      padding-bottom: 2px;
+    }
+
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 760px) {
+      body { padding: 6px; }
+      canvas { max-height: calc(100vh - 150px); }
+      .hint {
+        left: 10px;
+        right: 108px;
+        bottom: 10px;
+        font-size: 0.82rem;
+      }
+      .mobile-controls { display: block; }
+      .panel { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <h1>Dark Flight Deluxe</h1>
+        <p>Dia/noite, níveis, fases, loading, som, partículas e suporte melhorado pra celular.</p>
+      </div>
+      <div class="stats">
+        <div class="pill"><span>Pontos</span><strong id="score">0</strong></div>
+        <div class="pill"><span>Recorde</span><strong id="best">0</strong></div>
+        <div class="pill"><span>Fase</span><strong id="phase">1</strong></div>
+        <div class="pill"><span>Velocidade</span><strong id="speed">1.0x</strong></div>
+      </div>
+    </div>
+
+    <div class="game-shell">
+      <canvas id="game" width="1280" height="720"></canvas>
+
+      <div class="hud">
+        <div class="hint">ESPAÇO / CLIQUE / TOQUE para subir</div>
+        <div class="mobile-controls">
+          <button class="tap-btn" id="tapBtn">VOAR</button>
+        </div>
+      </div>
+
+      <div class="overlay" id="loadingOverlay">
+        <div class="panel">
+          <h2 class="glow">Carregando</h2>
+          <p>Preparando cenário, efeitos, áudio e interface...</p>
+          <div class="loading-bar"><div class="loading-fill" id="loadingFill"></div></div>
+          <p id="loadingText" style="margin-top:12px;">0%</p>
+        </div>
+      </div>
+
+      <div class="overlay hidden" id="menuOverlay">
+        <div class="panel">
+          <h2 class="glow">Dark Flight Deluxe</h2>
+          <p>Escolha o período do mapa e o nível de dificuldade. Depois é só começar.</p>
+
+          <div class="grid">
+            <div>
+              <h3 style="margin-bottom:10px; text-align:left;">Tema</h3>
+              <div class="option-card active theme-option" data-theme="night">
+                <h3>Noite</h3>
+                <small>Visual dark, lua, névoa e brilho neon mais intenso.</small>
+              </div>
+              <div class="option-card theme-option" data-theme="day" style="margin-top:10px;">
+                <h3>Dia</h3>
+                <small>Céu claro, sol, nuvens e cenário mais vivo.</small>
+              </div>
+            </div>
+            <div>
+              <h3 style="margin-bottom:10px; text-align:left;">Dificuldade</h3>
+              <div class="option-card active diff-option" data-diff="normal">
+                <h3>Normal</h3>
+                <small>Equilibrado. Bom para começar e ainda desafia.</small>
+              </div>
+              <div class="option-card diff-option" data-diff="easy" style="margin-top:10px;">
+                <h3>Fácil</h3>
+                <small>Mais espaço entre obstáculos e velocidade menor.</small>
+              </div>
+              <div class="option-card diff-option" data-diff="hard" style="margin-top:10px;">
+                <h3>Difícil</h3>
+                <small>Mais rápido, menos espaço e progressão mais pesada.</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button class="primary" id="playBtn">Começar jogo</button>
+            <button class="secondary" id="toggleSoundBtn">Som: Ligado</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="overlay hidden" id="gameOverOverlay">
+        <div class="panel">
+          <h2 class="glow">Game Over</h2>
+          <p id="resultText">Você caiu.</p>
+          <div class="btn-row">
+            <button class="primary" id="restartBtn">Jogar novamente</button>
+            <button class="secondary" id="backMenuBtn">Voltar ao menu</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-note">Arquivo único. Salva como .html e abre no navegador.</div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+
+    const scoreEl = document.getElementById('score');
+    const bestEl = document.getElementById('best');
+    const phaseEl = document.getElementById('phase');
+    const speedEl = document.getElementById('speed');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const menuOverlay = document.getElementById('menuOverlay');
+    const gameOverOverlay = document.getElementById('gameOverOverlay');
+    const loadingFill = document.getElementById('loadingFill');
+    const loadingText = document.getElementById('loadingText');
+    const resultText = document.getElementById('resultText');
+    const playBtn = document.getElementById('playBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const backMenuBtn = document.getElementById('backMenuBtn');
+    const tapBtn = document.getElementById('tapBtn');
+    const toggleSoundBtn = document.getElementById('toggleSoundBtn');
+
+    const W = canvas.width;
+    const H = canvas.height;
+
+    let best = Number(localStorage.getItem('darkFlightDeluxeBest') || 0);
+    bestEl.textContent = best;
+
+    let state = 'loading';
+    let theme = 'night';
+    let difficulty = 'normal';
+    let soundEnabled = true;
+    let audioCtx = null;
+    let animationId = null;
+    let lastTime = 0;
+
+    let stars = [];
+    let clouds = [];
+    let fogBands = [];
+    let particles = [];
+    let pipes = [];
+    let embers = [];
+    let flash = 0;
+    let spawnTimer = 0;
+    let score = 0;
+    let phase = 1;
+    let worldSpeed = 280;
+    let pipeGap = 175;
+
+    const difficultyConfig = {
+      easy: { speed: 240, gap: 205, gravity: 930, lift: -330, spawn: 1.5 },
+      normal: { speed: 280, gap: 175, gravity: 980, lift: -345, spawn: 1.35 },
+      hard: { speed: 330, gap: 150, gravity: 1030, lift: -355, spawn: 1.16 }
+    };
+
+    const player = {
+      x: 220,
+      y: H / 2,
+      vy: 0,
+      radius: 18,
+      gravity: 980,
+      lift: -345,
+      rot: 0,
+      trail: []
+    };
+
+    function initAudio() {
+      if (audioCtx) return;
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+      audioCtx = new AudioContextClass();
+    }
+
+    function beep(freq = 440, duration = 0.08, type = 'sine', volume = 0.03, ramp = true) {
+      if (!soundEnabled) return;
+      initAudio();
+      if (!audioCtx) return;
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.value = freq;
+      gain.gain.value = volume;
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      const now = audioCtx.currentTime;
+      if (ramp) {
+        gain.gain.setValueAtTime(volume, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+      }
+
+      osc.start(now);
+      osc.stop(now + duration);
+    }
+
+    function playFlapSound() {
+      beep(theme === 'night' ? 520 : 620, 0.06, 'triangle', 0.025);
+    }
+
+    function playScoreSound() {
+      beep(740, 0.08, 'square', 0.028);
+      setTimeout(() => beep(920, 0.08, 'square', 0.02), 50);
+    }
+
+    function playCrashSound() {
+      beep(180, 0.18, 'sawtooth', 0.04);
+      setTimeout(() => beep(120, 0.22, 'triangle', 0.025), 40);
+    }
+
+    function buildBackground() {
+      stars = Array.from({ length: 90 }, () => ({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 2 + 0.2,
+        a: Math.random() * 0.8 + 0.15,
+        s: Math.random() * 16 + 6
+      }));
+
+      clouds = Array.from({ length: 12 }, () => ({
+        x: Math.random() * W,
+        y: Math.random() * (H * 0.55),
+        w: 80 + Math.random() * 140,
+        h: 24 + Math.random() * 42,
+        s: 10 + Math.random() * 18,
+        a: 0.18 + Math.random() * 0.15
+      }));
+
+      fogBands = Array.from({ length: 8 }, (_, i) => ({
+        x: Math.random() * W,
+        y: 55 + i * 70 + Math.random() * 20,
+        w: 140 + Math.random() * 200,
+        h: 35 + Math.random() * 50,
+        speed: 8 + Math.random() * 20,
+        alpha: 0.02 + Math.random() * 0.04
+      }));
+    }
+
+    function applyDifficulty() {
+      const cfg = difficultyConfig[difficulty];
+      worldSpeed = cfg.speed;
+      pipeGap = cfg.gap;
+      player.gravity = cfg.gravity;
+      player.lift = cfg.lift;
+    }
+
+    function resetGame() {
+      applyDifficulty();
+      score = 0;
+      phase = 1;
+      spawnTimer = 0;
+      pipes = [];
+      particles = [];
+      embers = [];
+      flash = 0;
+      player.y = H / 2;
+      player.vy = 0;
+      player.rot = 0;
+      player.trail = [];
+      scoreEl.textContent = '0';
+      phaseEl.textContent = '1';
+      speedEl.textContent = '1.0x';
+    }
+
+    function setActiveOptions() {
+      document.querySelectorAll('.theme-option').forEach(el => {
+        el.classList.toggle('active', el.dataset.theme === theme);
+      });
+      document.querySelectorAll('.diff-option').forEach(el => {
+        el.classList.toggle('active', el.dataset.diff === difficulty);
+      });
+      toggleSoundBtn.textContent = `Som: ${soundEnabled ? 'Ligado' : 'Desligado'}`;
+    }
+
+    function showMenu() {
+      state = 'menu';
+      menuOverlay.classList.remove('hidden');
+      gameOverOverlay.classList.add('hidden');
+      setActiveOptions();
+      resetGame();
+      draw();
+    }
+
+    function startGame() {
+      initAudio();
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      resetGame();
+      state = 'playing';
+      menuOverlay.classList.add('hidden');
+      gameOverOverlay.classList.add('hidden');
+      lastTime = performance.now();
+      cancelAnimationFrame(animationId);
+      animationId = requestAnimationFrame(loop);
+    }
+
+    function endGame() {
+      if (state !== 'playing') return;
+      state = 'over';
+      playCrashSound();
+      explodePlayer();
+      if (score > best) {
+        best = score;
+        localStorage.setItem('darkFlightDeluxeBest', best);
+        bestEl.textContent = best;
+      }
+      resultText.textContent = `Pontos: ${score} • Fase: ${phase} • Tema: ${theme === 'night' ? 'Noite' : 'Dia'} • Dificuldade: ${difficulty}.`;
+      gameOverOverlay.classList.remove('hidden');
+    }
+
+    function flap() {
+      if (state !== 'playing') return;
+      player.vy = player.lift;
+      playFlapSound();
+      for (let i = 0; i < 16; i++) {
+        particles.push({
+          x: player.x - 10,
+          y: player.y + (Math.random() - 0.5) * 20,
+          vx: -50 - Math.random() * 160,
+          vy: (Math.random() - 0.5) * 180,
+          life: 0.35 + Math.random() * 0.5,
+          size: 2 + Math.random() * 6,
+          glow: true,
+          hue: theme === 'night' ? 'purple' : 'cyan'
+        });
+      }
+    }
+
+    function spawnPipe() {
+      const margin = 95;
+      const gapY = margin + Math.random() * (H - margin * 2);
+      const width = 95;
+      pipes.push({
+        x: W + width,
+        width,
+        gapY,
+        gap: pipeGap,
+        scored: false,
+        variant: Math.random() > 0.5 ? 'glow' : 'solid'
+      });
+    }
+
+    function explodePlayer() {
+      flash = 0.85;
+      for (let i = 0; i < 44; i++) {
+        particles.push({
+          x: player.x,
+          y: player.y,
+          vx: (Math.random() - 0.5) * 420,
+          vy: (Math.random() - 0.5) * 420,
+          life: 0.5 + Math.random() * 0.65,
+          size: 2 + Math.random() * 8,
+          glow: true,
+          hue: Math.random() > 0.5 ? 'purple' : 'pink'
+        });
+      }
+    }
+
+    function circleRectCollision(cx, cy, radius, rx, ry, rw, rh) {
+      const nearestX = Math.max(rx, Math.min(cx, rx + rw));
+      const nearestY = Math.max(ry, Math.min(cy, ry + rh));
+      const dx = cx - nearestX;
+      const dy = cy - nearestY;
+      return dx * dx + dy * dy <= radius * radius;
+    }
+
+    function updatePhase() {
+      const newPhase = Math.min(6, Math.floor(score / 7) + 1);
+      if (newPhase !== phase) {
+        phase = newPhase;
+        phaseEl.textContent = phase;
+        for (let i = 0; i < 20; i++) {
+          particles.push({
+            x: W / 2,
+            y: H / 2,
+            vx: (Math.random() - 0.5) * 260,
+            vy: (Math.random() - 0.5) * 260,
+            life: 0.55 + Math.random() * 0.45,
+            size: 2 + Math.random() * 6,
+            glow: true,
+            hue: 'gold'
+          });
+        }
+      }
+    }
+
+    function update(dt) {
+      if (state !== 'playing') return;
+
+      const cfg = difficultyConfig[difficulty];
+      worldSpeed += dt * (phase * (difficulty === 'hard' ? 5.4 : difficulty === 'easy' ? 2.2 : 3.4));
+      pipeGap = Math.max(difficulty === 'hard' ? 122 : difficulty === 'easy' ? 165 : 138, cfg.gap - score * (difficulty === 'hard' ? 1.5 : 0.9));
+      speedEl.textContent = `${(worldSpeed / cfg.speed).toFixed(1)}x`;
+
+      player.vy += player.gravity * dt;
+      player.y += player.vy * dt;
+      player.rot = Math.max(-0.55, Math.min(1.2, player.vy / 420));
+
+      player.trail.push({ x: player.x, y: player.y, life: 0.5, size: 0.8 + Math.random() * 0.5 });
+      if (player.trail.length > 24) player.trail.shift();
+      player.trail.forEach(t => t.life -= dt);
+      player.trail = player.trail.filter(t => t.life > 0);
+
+      spawnTimer += dt;
+      const interval = Math.max(0.85, cfg.spawn - score * 0.01);
+      if (spawnTimer >= interval) {
+        spawnTimer = 0;
+        spawnPipe();
+      }
+
+      stars.forEach(s => {
+        s.x -= s.s * dt;
+        if (s.x < -4) { s.x = W + 4; s.y = Math.random() * H; }
+      });
+
+      clouds.forEach(c => {
+        c.x -= c.s * dt;
+        if (c.x + c.w < 0) {
+          c.x = W + Math.random() * 80;
+          c.y = Math.random() * (H * 0.55);
+        }
+      });
+
+      fogBands.forEach(f => {
+        f.x -= f.speed * dt;
+        if (f.x + f.w < 0) f.x = W + Math.random() * 90;
+      });
+
+      embers.push({
+        x: W + 10,
+        y: Math.random() * H,
+        vx: -(80 + Math.random() * 70),
+        vy: (Math.random() - 0.5) * 30,
+        life: 0.7 + Math.random() * 0.6,
+        size: 1 + Math.random() * 3,
+        glow: true,
+        hue: theme === 'night' ? 'purple' : 'cyan'
+      });
+
+      pipes.forEach(pipe => {
+        pipe.x -= worldSpeed * dt;
+
+        const topH = pipe.gapY - pipe.gap / 2;
+        const bottomY = pipe.gapY + pipe.gap / 2;
+        const bottomH = H - bottomY;
+
+        if (
+          circleRectCollision(player.x, player.y, player.radius, pipe.x, 0, pipe.width, topH) ||
+          circleRectCollision(player.x, player.y, player.radius, pipe.x, bottomY, pipe.width, bottomH)
+        ) {
+          endGame();
+        }
+
+        if (!pipe.scored && pipe.x + pipe.width < player.x) {
+          pipe.scored = true;
+          score++;
+          scoreEl.textContent = score;
+          playScoreSound();
+          updatePhase();
+          for (let i = 0; i < 14; i++) {
+            particles.push({
+              x: player.x + 10,
+              y: player.y,
+              vx: 40 + Math.random() * 180,
+              vy: (Math.random() - 0.5) * 180,
+              life: 0.35 + Math.random() * 0.45,
+              size: 2 + Math.random() * 5,
+              glow: true,
+              hue: 'gold'
+            });
+          }
+        }
+      });
+
+      pipes = pipes.filter(p => p.x + p.width > -140);
+
+      const allParticles = particles.concat(embers);
+      allParticles.forEach(p => {
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.life -= dt;
+        p.vx *= 0.995;
+        p.vy *= 0.995;
+      });
+      particles = particles.filter(p => p.life > 0);
+      embers = embers.filter(p => p.life > 0 && p.x > -20);
+
+      flash = Math.max(0, flash - dt * 2.2);
+
+      if (player.y - player.radius <= 0 || player.y + player.radius >= H) {
+        endGame();
+      }
+    }
+
+    function drawBackground() {
+      if (theme === 'night') {
+        const sky = ctx.createLinearGradient(0, 0, 0, H);
+        sky.addColorStop(0, '#090b12');
+        sky.addColorStop(0.45, '#111827');
+        sky.addColorStop(1, '#06080e');
+        ctx.fillStyle = sky;
+        ctx.fillRect(0, 0, W, H);
+
+        const moonX = W * 0.8;
+        const moonY = 120;
+        const mg = ctx.createRadialGradient(moonX, moonY, 8, moonX, moonY, 100);
+        mg.addColorStop(0, 'rgba(180,190,255,0.24)');
+        mg.addColorStop(1, 'rgba(180,190,255,0)');
+        ctx.fillStyle = mg;
+        ctx.beginPath(); ctx.arc(moonX, moonY, 100, 0, Math.PI * 2); ctx.fill();
+
+        ctx.fillStyle = 'rgba(235,240,255,0.92)';
+        ctx.beginPath(); ctx.arc(moonX, moonY, 28, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = 'rgba(10,12,18,0.86)';
+        ctx.beginPath(); ctx.arc(moonX + 11, moonY - 8, 26, 0, Math.PI * 2); ctx.fill();
+
+        stars.forEach(s => {
+          ctx.globalAlpha = s.a;
+          ctx.fillStyle = '#dce2ff';
+          ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fill();
+        });
+        ctx.globalAlpha = 1;
+
+        fogBands.forEach(f => {
+          const g = ctx.createRadialGradient(f.x, f.y, 10, f.x, f.y, f.w);
+          g.addColorStop(0, `rgba(190,200,255,${f.alpha})`);
+          g.addColorStop(1, 'rgba(190,200,255,0)');
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.ellipse(f.x, f.y, f.w, f.h, 0, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      } else {
+        const sky = ctx.createLinearGradient(0, 0, 0, H);
+        sky.addColorStop(0, '#8fd3ff');
+        sky.addColorStop(0.45, '#bfe9ff');
+        sky.addColorStop(1, '#e9f7ff');
+        ctx.fillStyle = sky;
+        ctx.fillRect(0, 0, W, H);
+
+        const sunX = W * 0.8;
+        const sunY = 120;
+        const sg = ctx.createRadialGradient(sunX, sunY, 12, sunX, sunY, 120);
+        sg.addColorStop(0, 'rgba(255,220,120,0.38)');
+        sg.addColorStop(1, 'rgba(255,220,120,0)');
+        ctx.fillStyle = sg;
+        ctx.beginPath(); ctx.arc(sunX, sunY, 120, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#ffd76a';
+        ctx.beginPath(); ctx.arc(sunX, sunY, 32, 0, Math.PI * 2); ctx.fill();
+
+        clouds.forEach(c => {
+          ctx.globalAlpha = c.a;
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.ellipse(c.x, c.y, c.w, c.h, 0, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        ctx.globalAlpha = 1;
+      }
+
+      drawMountains();
+      drawFloorGlow();
+    }
+
+    function drawFloorGlow() {
+      const g = ctx.createLinearGradient(0, H - 100, 0, H);
+      g.addColorStop(0, 'rgba(124,58,237,0)');
+      g.addColorStop(1, theme === 'night' ? 'rgba(124,58,237,0.10)' : 'rgba(34,211,238,0.12)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, H - 100, W, 100);
+    }
+
+    function drawMountains() {
+      const baseColors = theme === 'night'
+        ? ['rgba(10,12,20,0.25)', 'rgba(8,10,16,0.42)', 'rgba(5,7,12,0.7)']
+        : ['rgba(100,160,190,0.22)', 'rgba(70,120,150,0.36)', 'rgba(50,85,105,0.55)'];
+
+      [120, 80, 40].forEach((offset, idx) => {
+        ctx.beginPath();
+        ctx.moveTo(0, H);
+        for (let x = 0; x <= W + 80; x += 80) {
+          const wave = Math.sin((x * 0.01) + idx * 1.7 + performance.now() * 0.0002 * (idx + 1));
+          const y = H - offset - wave * (30 + idx * 8) - (idx * 10);
+          ctx.lineTo(x, y);
+        }
+        ctx.lineTo(W, H);
+        ctx.closePath();
+        ctx.fillStyle = baseColors[idx];
+        ctx.fill();
+      });
+    }
+
+    function drawPipeSegment(x, y, w, h, isTop, variant) {
+      const a = theme === 'night' ? '#171d2b' : '#1f8f9f';
+      const b = theme === 'night' ? (variant === 'glow' ? '#43146c' : '#222a3c') : (variant === 'glow' ? '#1fa6d0' : '#2ba16e');
+      const c = theme === 'night' ? '#0d1018' : '#18697b';
+
+      const g = ctx.createLinearGradient(x, y, x + w, y);
+      g.addColorStop(0, a); g.addColorStop(0.5, b); g.addColorStop(1, c);
+      ctx.fillStyle = g;
+      roundRect(x, y, w, h, 18, true, false);
+
+      ctx.fillStyle = theme === 'night' ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.18)';
+      roundRect(x + 10, y + 10, 12, Math.max(0, h - 20), 8, true, false);
+
+      const capY = isTop ? h - 24 : y;
+      const cg = ctx.createLinearGradient(x - 8, capY, x + w + 8, capY);
+      cg.addColorStop(0, theme === 'night' ? '#0d111a' : '#14606f');
+      cg.addColorStop(0.5, theme === 'night' ? '#5b21b6' : '#22d3ee');
+      cg.addColorStop(1, theme === 'night' ? '#0d111a' : '#14606f');
+      ctx.fillStyle = cg;
+      roundRect(x - 8, capY, w + 16, 24, 12, true, false);
+
+      if (variant === 'glow') {
+        ctx.strokeStyle = theme === 'night' ? 'rgba(124,58,237,0.4)' : 'rgba(34,211,238,0.45)';
+        ctx.lineWidth = 2;
+        roundRect(x + 2, y + 2, w - 4, h - 4, 14, false, true);
+      }
+    }
+
+    function drawPipes() {
+      pipes.forEach(pipe => {
+        const topH = pipe.gapY - pipe.gap / 2;
+        const bottomY = pipe.gapY + pipe.gap / 2;
+        drawPipeSegment(pipe.x, 0, pipe.width, topH, true, pipe.variant);
+        drawPipeSegment(pipe.x, bottomY, pipe.width, H - bottomY, false, pipe.variant);
+      });
+    }
+
+    function drawPlayer() {
+      player.trail.forEach(t => {
+        ctx.globalAlpha = Math.max(0, t.life * 0.65);
+        ctx.fillStyle = theme === 'night' ? 'rgba(124,58,237,0.22)' : 'rgba(34,211,238,0.25)';
+        ctx.beginPath();
+        ctx.arc(t.x, t.y, player.radius * t.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+
+      ctx.save();
+      ctx.translate(player.x, player.y);
+      ctx.rotate(player.rot);
+
+      const core = ctx.createRadialGradient(0, 0, 6, 0, 0, 30);
+      if (theme === 'night') {
+        core.addColorStop(0, 'rgba(160,100,255,0.98)');
+        core.addColorStop(0.55, 'rgba(71,24,117,0.96)');
+        core.addColorStop(1, 'rgba(13,9,22,0.98)');
+      } else {
+        core.addColorStop(0, 'rgba(80,240,255,0.98)');
+        core.addColorStop(0.55, 'rgba(23,148,191,0.96)');
+        core.addColorStop(1, 'rgba(8,46,73,0.98)');
+      }
+      ctx.fillStyle = core;
+      ctx.beginPath(); ctx.ellipse(0, 0, 18, 14, 0, 0, Math.PI * 2); ctx.fill();
+
+      ctx.shadowBlur = 24;
+      ctx.shadowColor = theme === 'night' ? 'rgba(124,58,237,0.6)' : 'rgba(34,211,238,0.55)';
+      ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      ctx.fillStyle = '#edf3ff';
+      ctx.beginPath(); ctx.arc(6, -3, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#08101b';
+      ctx.beginPath(); ctx.arc(7, -3, 1.3, 0, Math.PI * 2); ctx.fill();
+
+      ctx.fillStyle = theme === 'night' ? '#b5179e' : '#0ea5e9';
+      ctx.beginPath(); ctx.moveTo(-10, -2); ctx.lineTo(-25, -12); ctx.lineTo(-16, 2); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-10, 2); ctx.lineTo(-25, 12); ctx.lineTo(-16, -2); ctx.closePath(); ctx.fill();
+
+      ctx.fillStyle = '#0a0d16';
+      ctx.beginPath(); ctx.moveTo(18, 0); ctx.lineTo(29, -4); ctx.lineTo(29, 4); ctx.closePath(); ctx.fill();
+
+      ctx.restore();
+    }
+
+    function particleColor(p) {
+      if (p.hue === 'purple') return 'rgba(124,58,237,0.95)';
+      if (p.hue === 'pink') return 'rgba(255,77,122,0.92)';
+      if (p.hue === 'gold') return 'rgba(255,210,70,0.95)';
+      if (p.hue === 'cyan') return 'rgba(34,211,238,0.95)';
+      return 'rgba(230,240,255,0.9)';
+    }
+
+    function drawParticles(list) {
+      list.forEach(p => {
+        ctx.globalAlpha = Math.max(0, p.life);
+        ctx.fillStyle = particleColor(p);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (p.glow) {
+          ctx.globalAlpha = Math.max(0, p.life * 0.3);
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size * 2.6, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+      ctx.globalAlpha = 1;
+    }
+
+    function drawTexts() {
+      if (state !== 'playing') return;
+      ctx.save();
+      ctx.textAlign = 'center';
+      ctx.fillStyle = theme === 'night' ? 'rgba(255,255,255,0.14)' : 'rgba(10,30,45,0.12)';
+      ctx.font = '800 110px Inter, Arial';
+      ctx.fillText(`FASE ${phase}`, W / 2, 120);
+      ctx.restore();
+    }
+
+    function drawVignette() {
+      const g = ctx.createRadialGradient(W / 2, H / 2, H * 0.18, W / 2, H / 2, H * 0.78);
+      g.addColorStop(0, 'rgba(0,0,0,0)');
+      g.addColorStop(1, theme === 'night' ? 'rgba(0,0,0,0.42)' : 'rgba(0,30,50,0.16)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    function drawFlash() {
+      if (flash <= 0) return;
+      ctx.fillStyle = `rgba(255, 70, 120, ${flash * 0.35})`;
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    function draw() {
+      drawBackground();
+      drawPipes();
+      drawParticles(embers);
+      drawParticles(particles);
+      drawPlayer();
+      drawTexts();
+      drawVignette();
+      drawFlash();
+    }
+
+    function loop(ts) {
+      const dt = Math.min(0.033, (ts - lastTime) / 1000 || 0);
+      lastTime = ts;
+      update(dt);
+      draw();
+      animationId = requestAnimationFrame(loop);
+    }
+
+    function roundRect(x, y, w, h, r, fill, stroke) {
+      const radius = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.arcTo(x + w, y, x + w, y + h, radius);
+      ctx.arcTo(x + w, y + h, x, y + h, radius);
+      ctx.arcTo(x, y + h, x, y, radius);
+      ctx.arcTo(x, y, x + w, y, radius);
+      ctx.closePath();
+      if (fill) ctx.fill();
+      if (stroke) ctx.stroke();
+    }
+
+    function handleFlyInput(e) {
+      if (e && e.type === 'keydown' && e.code !== 'Space') return;
+      if (e) e.preventDefault();
+      if (state === 'playing') flap();
+    }
+
+    function fakeLoading() {
+      let progress = 0;
+      const steps = [8, 17, 29, 42, 57, 68, 79, 91, 100];
+      let i = 0;
+      const timer = setInterval(() => {
+        progress = steps[i] ?? 100;
+        loadingFill.style.width = progress + '%';
+        loadingText.textContent = progress + '%';
+        i++;
+        if (progress >= 100) {
+          clearInterval(timer);
+          setTimeout(() => {
+            loadingOverlay.classList.add('hidden');
+            showMenu();
+          }, 350);
+        }
+      }, 160);
+    }
+
+    document.querySelectorAll('.theme-option').forEach(el => {
+      el.addEventListener('click', () => {
+        theme = el.dataset.theme;
+        setActiveOptions();
+        draw();
+      });
+    });
+
+    document.querySelectorAll('.diff-option').forEach(el => {
+      el.addEventListener('click', () => {
+        difficulty = el.dataset.diff;
+        setActiveOptions();
+      });
+    });
+
+    toggleSoundBtn.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      setActiveOptions();
+    });
+
+    playBtn.addEventListener('click', startGame);
+    restartBtn.addEventListener('click', startGame);
+    backMenuBtn.addEventListener('click', showMenu);
+
+    window.addEventListener('keydown', handleFlyInput);
+    canvas.addEventListener('mousedown', handleFlyInput);
+    canvas.addEventListener('touchstart', handleFlyInput, { passive: false });
+    tapBtn.addEventListener('touchstart', handleFlyInput, { passive: false });
+    tapBtn.addEventListener('mousedown', handleFlyInput);
+
+    buildBackground();
+    setActiveOptions();
+    resetGame();
+    draw();
+    fakeLoading();
+  </script>
+</body>
+</html>
